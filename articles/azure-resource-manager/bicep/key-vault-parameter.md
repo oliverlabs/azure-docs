@@ -208,8 +208,8 @@ If you don't want to use a module, you can reference the key vault directly in t
 
 ![Resource Manager key vault integration diagram](./media/key-vault-parameter/statickeyvault.png)
 
-> [!NOTE]
-> Currently you can only reference the key vault in JSON parameters files. You can't reference key vault in Bicep parameters file.
+> **Note**
+> You can reference key vault in a Bicep parameters file starting from `az cli` version `2.52.0` and Bicep version `0.20.4`. 
 
 The following Bicep file deploys a SQL server that includes an administrator password. The password parameter is set to a secure string. But the Bicep doesn't specify where that value comes from.
 
@@ -267,6 +267,17 @@ If you need to use a version of the secret other than the current version, inclu
 ```json
 "secretName": "ExamplePassword",
 "secretVersion": "cd91b2b7e10e492ebb870a6ee0591b68"
+```
+
+For `.bicepparam` files, create a file named `main.bicepparam` with the following content:
+
+```bicep
+using './main.bicep'
+
+param sqlServerName = '<your-server-name>'
+param adminLogin = 'exampleadmin'
+param adminPassword = az.getSecret('<your-subscription-id>', '<your-resource-group>', '<your-key-vault-name>', 'ExamplePassword')
+
 ```
 
 Deploy the template and pass in the parameters file:
